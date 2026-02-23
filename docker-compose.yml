@@ -1,0 +1,156 @@
+version: '3.8'
+
+# =============================================================================
+# Clinical Trial Data Pipeline — Docker Compose
+# =============================================================================
+# Usage:
+#   docker-compose up -d              # Start everything
+#   docker-compose logs -f pipeline   # Watch pipeline logs
+#   docker-compose down -v            # Stop and clean up
+# =============================================================================
+
+x-airflow-common: &airflow-common
+  build: .
+  environment:
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres-airflow:5432/airflow
+    AIRFLOW__CORE__FERNET_KEY: 'zTvhk1mG8CKfNx01GwJ_1COap_mFNJhJT3Q1mKvfJeg='
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+    # Pipeline database connection
+    PIPELINE_DB_HOST: postgres-data
+    PIPELINE_DB_PORT: 5432
+    PIPELINE_DB_NAME: clinical_trials
+    PIPELINE_DB_USER: pipeline
+    PIPELINE_DB_PASSWORD: pipeline123
+    CSV_FILE_PATH: /opt/airflow/data/clinical_trials.csv
+  volumes:
+    - ./src:/opt/airflow/dags/src
+    - ./dags:/opt/airflow/dags
+    - ./sql:/opt/airflow/sql
+    - ./data:/opt/airflow/data
+    - ./output:/opt/airflow/output
+  depends_on:
+    postgres-airflow:
+      condition: service_healthy
+    postgres-data:
+      condition: service_healthy
+
+services:
+  # ==========================================================================
+  # PostgreSQL — Airflow metadata database
+  # ==========================================================================
+  postgres-airflow:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres_airflow_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow"]
+      interval: 5s
+      retries: 5
+    ports:
+      - "5433:5432"
+
+  # ==========================================================================
+  # PostgreSQL — Clinical trials data warehouse
+  # ==========================================================================
+  postgres-data:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: pipeline
+      POSTGRES_PASSWORD: pipeline123
+      POSTGRES_DB: clinical_trials
+    volumes:
+      - postgres_data_vol:/var/lib/postgresql/data
+      - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/01_create_tables.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pipeline -d clinical_trials"]
+      interval: 5s
+      retries: 5
+    ports:
+      - "5434:5432"
+
+  # ==========================================================================
+  # Airflow — Initialize database
+  # ==========================================================================
+  airflow-init:
+    <<: *airflow-common
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        airflow db init
+        airflow users create \
+          --username admin \
+          --password admin \
+          --firstname Admin \
+          --lastname User \
+          --role Admin \
+          --email admin@example.com || true
+        # Create the Cloudberry connection (points to our data postgres)
+        airflow connections add 'Cloudberry_dwh_dev_data_power_db' \
+          --conn-type postgres \
+          --conn-host postgres-data \
+          --conn-port 5432 \
+          --conn-login pipeline \
+          --conn-password pipeline123 \
+          --conn-schema clinical_trials || true
+        echo "Airflow initialized successfully"
+    depends_on:
+      postgres-airflow:
+        condition: service_healthy
+      postgres-data:
+        condition: service_healthy
+
+  # ==========================================================================
+  # Airflow — Webserver (UI at http://localhost:8080)
+  # ==========================================================================
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - "8080:8080"
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
+  # ==========================================================================
+  # Airflow — Scheduler (runs DAGs)
+  # ==========================================================================
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
+  # ==========================================================================
+  # Pipeline runner — Runs the pipeline directly (without Airflow)
+  # ==========================================================================
+  pipeline:
+    <<: *airflow-common
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        echo "Waiting for database to be ready..."
+        sleep 10
+        echo "Starting Clinical Trial Pipeline..."
+        cd /opt/airflow/dags
+        python -c "
+        import sys
+        sys.path.insert(0, '/opt/airflow/dags')
+        from src.pipeline.main import run_pipeline
+        run_pipeline(source='csv')
+        "
+    depends_on:
+      postgres-data:
+        condition: service_healthy
+
+volumes:
+  postgres_airflow_data:
+  postgres_data_vol:

@@ -1,0 +1,145 @@
+2026-02-23 18:13:09,286 | INFO     | pipeline | ======================================================================
+2026-02-23 18:13:09,286 | INFO     | pipeline |   CLINICAL TRIAL DATA PIPELINE
+2026-02-23 18:13:09,287 | INFO     | pipeline |   Run ID:  13997c05-20260223-181309
+2026-02-23 18:13:09,288 | INFO     | pipeline |   Source:  csv
+2026-02-23 18:13:09,288 | INFO     | pipeline |   Started: 2026-02-23 18:13:09
+2026-02-23 18:13:09,289 | INFO     | pipeline | ======================================================================
+2026-02-23 18:13:09,290 | INFO     | pipeline | 
+========================================
+2026-02-23 18:13:09,291 | INFO     | pipeline | STEP 1/4: INGESTION
+2026-02-23 18:13:09,292 | INFO     | pipeline | ========================================
+2026-02-23 18:13:09,293 | INFO     | pipeline | --- CSV Ingestion ---
+2026-02-23 18:13:09,296 | INFO     | src.ingestion.csv_ingestor | Reading CSV: /opt/airflow/data/clinical_trials.csv (390.8 MB)
+2026-02-23 18:13:17,974 | INFO     | src.ingestion.csv_ingestor | CSV loaded: 496,615 rows × 17 columns
+2026-02-23 18:13:18,145 | INFO     | src.ingestion.csv_ingestor | Dropped index column(s): ['Unnamed: 0']
+2026-02-23 18:13:18,146 | INFO     | src.ingestion.base_ingestor | Schema validation passed for 'clinical_trials.csv' — 16 columns found
+2026-02-23 18:13:18,146 | INFO     | src.ingestion.csv_ingestor | Ingestion complete: 496,615 rows ready for processing
+2026-02-23 18:13:18,150 | INFO     | pipeline | CSV: 496,615 rows ingested
+2026-02-23 18:13:18,151 | INFO     | pipeline | Ingested: 496,615 rows × 17 columns
+2026-02-23 18:13:18,152 | INFO     | pipeline | 
+========================================
+2026-02-23 18:13:18,152 | INFO     | pipeline | STEP 2/4: CLEANING & TRANSFORMATION
+2026-02-23 18:13:18,153 | INFO     | pipeline | ========================================
+2026-02-23 18:13:18,497 | INFO     | src.processing.cleaner | Starting cleaning pipeline on 496,615 rows...
+2026-02-23 18:13:20,733 | INFO     | src.processing.cleaner | Trimmed whitespace on 17 string columns
+2026-02-23 18:13:32,463 | INFO     | src.processing.cleaner | Replaced 596,170 hidden null values → NaN
+2026-02-23 18:13:32,969 | INFO     | src.processing.cleaner | Dates: 491,469 parsed, 214,975 approximate (YYYY-MM), 33 suspicious (nulled), 0 unparseable
+2026-02-23 18:13:33,028 | INFO     | src.processing.cleaner | Phases: 197,017 non-null values remain
+2026-02-23 18:13:33,070 | INFO     | src.processing.cleaner | Extracted 28,083 unique organizations
+2026-02-23 18:13:34,590 | INFO     | src.processing.cleaner | Split 'Conditions': 496,612 rows → 923,632 individual values (110,163 unique)
+2026-02-23 18:13:36,376 | INFO     | src.processing.cleaner | Split 'Interventions': 447,377 rows → 874,253 individual values (443,238 unique)
+2026-02-23 18:13:37,724 | INFO     | src.processing.cleaner | Split 'Standard Age': 495,730 rows → 933,847 individual values (3 unique)
+2026-02-23 18:13:39,053 | INFO     | src.processing.cleaner | Split 'Medical Subject Headings': 410,341 rows → 571,482 individual values (63,520 unique)
+2026-02-23 18:13:39,392 | INFO     | src.processing.cleaner | Built studies DataFrame: 496,615 rows × 14 columns
+2026-02-23 18:13:39,393 | INFO     | src.processing.cleaner | ============================================================
+2026-02-23 18:13:39,393 | INFO     | src.processing.cleaner | CLEANING SUMMARY
+2026-02-23 18:13:39,394 | INFO     | src.processing.cleaner | ============================================================
+2026-02-23 18:13:39,395 | INFO     | src.processing.cleaner |   rows_input                    :      496,615
+2026-02-23 18:13:39,396 | INFO     | src.processing.cleaner |   hidden_nulls_replaced         : 596170
+2026-02-23 18:13:39,397 | INFO     | src.processing.cleaner |   dates_parsed                  : 491469
+2026-02-23 18:13:39,398 | INFO     | src.processing.cleaner |   dates_approximate             : 214975
+2026-02-23 18:13:39,398 | INFO     | src.processing.cleaner |   dates_suspicious              : 33
+2026-02-23 18:13:39,399 | INFO     | src.processing.cleaner |   dates_unparseable             : 0
+2026-02-23 18:13:39,400 | INFO     | src.processing.cleaner |   rows_output                   :      496,615
+2026-02-23 18:13:39,400 | INFO     | src.processing.cleaner | ============================================================
+2026-02-23 18:13:39,401 | INFO     | pipeline |   Studies:        496,615 rows
+2026-02-23 18:13:39,405 | INFO     | pipeline |   Organizations:  28,083 rows
+2026-02-23 18:13:39,406 | INFO     | pipeline |   Conditions:     923,632 rows
+2026-02-23 18:13:39,407 | INFO     | pipeline |   Interventions:  874,253 rows
+2026-02-23 18:13:39,408 | INFO     | pipeline |   Age Groups:     933,847 rows
+2026-02-23 18:13:39,408 | INFO     | pipeline |   MeSH Terms:     571,482 rows
+2026-02-23 18:13:39,409 | INFO     | pipeline | 
+========================================
+2026-02-23 18:13:39,410 | INFO     | pipeline | STEP 3/4: VALIDATION
+2026-02-23 18:13:39,410 | INFO     | pipeline | ========================================
+2026-02-23 18:13:39,654 | INFO     | src.processing.validator | Date range: 1957-01-01 to 2026-12-31
+2026-02-23 18:13:39,658 | INFO     | src.processing.validator | 
+============================================================
+  DATA VALIDATION REPORT
+============================================================
+
+  WARNINGS (1):
+    ⚠ Column 'study_type' has 885 unexpected values. Examples: ['UNKNOWN']
+
+  Result: PASSED
+============================================================
+2026-02-23 18:13:39,658 | INFO     | src.processing.validator | Validation PASSED (1 warnings)
+2026-02-23 18:13:39,659 | INFO     | pipeline | 
+========================================
+2026-02-23 18:13:39,659 | INFO     | pipeline | STEP 4/4: DATABASE LOADING
+2026-02-23 18:13:39,660 | INFO     | pipeline | ========================================
+2026-02-23 18:13:39,718 | INFO     | src.loading.loader | Starting database load (run_id: 13997c05-20260223-181309)...
+2026-02-23 18:13:40,615 | INFO     | src.loading.loader | Truncated all data tables
+2026-02-23 18:13:40,616 | INFO     | src.loading.loader | Loading 28,083 organizations...
+2026-02-23 18:13:41,169 | INFO     | src.loading.loader |   Organizations: 10,000 / 28,083
+2026-02-23 18:13:41,679 | INFO     | src.loading.loader |   Organizations: 20,000 / 28,083
+2026-02-23 18:13:42,209 | INFO     | src.loading.loader | Organizations loaded: 28,083 rows
+2026-02-23 18:13:42,210 | INFO     | src.loading.loader | Loading 496,615 studies...
+2026-02-23 18:14:00,271 | INFO     | src.loading.loader |   Studies: 50,000 / 496,615
+2026-02-23 18:14:16,476 | INFO     | src.loading.loader |   Studies: 100,000 / 496,615
+2026-02-23 18:14:33,660 | INFO     | src.loading.loader |   Studies: 150,000 / 496,615
+2026-02-23 18:14:50,012 | INFO     | src.loading.loader |   Studies: 200,000 / 496,615
+2026-02-23 18:15:06,004 | INFO     | src.loading.loader |   Studies: 250,000 / 496,615
+2026-02-23 18:15:22,290 | INFO     | src.loading.loader |   Studies: 300,000 / 496,615
+2026-02-23 18:15:39,249 | INFO     | src.loading.loader |   Studies: 350,000 / 496,615
+2026-02-23 18:15:55,573 | INFO     | src.loading.loader |   Studies: 400,000 / 496,615
+2026-02-23 18:16:13,467 | INFO     | src.loading.loader |   Studies: 450,000 / 496,615
+2026-02-23 18:16:29,665 | INFO     | src.loading.loader | Studies loaded: 496,615 rows
+2026-02-23 18:16:29,834 | INFO     | src.loading.loader | Loading 923,632 rows into study_conditions...
+2026-02-23 18:16:38,460 | INFO     | src.loading.loader |   study_conditions: 100,000 / 923,632
+2026-02-23 18:16:45,062 | INFO     | src.loading.loader |   study_conditions: 200,000 / 923,632
+2026-02-23 18:16:51,954 | INFO     | src.loading.loader |   study_conditions: 300,000 / 923,632
+2026-02-23 18:16:58,723 | INFO     | src.loading.loader |   study_conditions: 400,000 / 923,632
+2026-02-23 18:17:05,642 | INFO     | src.loading.loader |   study_conditions: 500,000 / 923,632
+2026-02-23 18:17:13,495 | INFO     | src.loading.loader |   study_conditions: 600,000 / 923,632
+2026-02-23 18:17:20,216 | INFO     | src.loading.loader |   study_conditions: 700,000 / 923,632
+2026-02-23 18:17:27,218 | INFO     | src.loading.loader |   study_conditions: 800,000 / 923,632
+2026-02-23 18:17:33,924 | INFO     | src.loading.loader |   study_conditions: 900,000 / 923,632
+2026-02-23 18:17:35,495 | INFO     | src.loading.loader | study_conditions loaded: 923,632 rows
+2026-02-23 18:17:35,532 | INFO     | src.loading.loader | Loading 874,253 rows into study_interventions...
+2026-02-23 18:17:43,635 | INFO     | src.loading.loader |   study_interventions: 100,000 / 874,253
+2026-02-23 18:17:50,693 | INFO     | src.loading.loader |   study_interventions: 200,000 / 874,253
+2026-02-23 18:17:57,655 | INFO     | src.loading.loader |   study_interventions: 300,000 / 874,253
+2026-02-23 18:18:04,429 | INFO     | src.loading.loader |   study_interventions: 400,000 / 874,253
+2026-02-23 18:18:12,606 | INFO     | src.loading.loader |   study_interventions: 500,000 / 874,253
+2026-02-23 18:18:19,830 | INFO     | src.loading.loader |   study_interventions: 600,000 / 874,253
+2026-02-23 18:18:26,482 | INFO     | src.loading.loader |   study_interventions: 700,000 / 874,253
+2026-02-23 18:18:33,466 | INFO     | src.loading.loader |   study_interventions: 800,000 / 874,253
+2026-02-23 18:18:38,664 | INFO     | src.loading.loader | study_interventions loaded: 874,253 rows
+2026-02-23 18:18:38,696 | INFO     | src.loading.loader | Loading 933,847 rows into study_age_groups...
+2026-02-23 18:18:46,534 | INFO     | src.loading.loader |   study_age_groups: 100,000 / 933,847
+2026-02-23 18:18:53,084 | INFO     | src.loading.loader |   study_age_groups: 200,000 / 933,847
+2026-02-23 18:18:59,451 | INFO     | src.loading.loader |   study_age_groups: 300,000 / 933,847
+2026-02-23 18:19:05,965 | INFO     | src.loading.loader |   study_age_groups: 400,000 / 933,847
+2026-02-23 18:19:12,505 | INFO     | src.loading.loader |   study_age_groups: 500,000 / 933,847
+2026-02-23 18:19:18,591 | INFO     | src.loading.loader |   study_age_groups: 600,000 / 933,847
+2026-02-23 18:19:24,622 | INFO     | src.loading.loader |   study_age_groups: 700,000 / 933,847
+2026-02-23 18:19:30,684 | INFO     | src.loading.loader |   study_age_groups: 800,000 / 933,847
+2026-02-23 18:19:36,728 | INFO     | src.loading.loader |   study_age_groups: 900,000 / 933,847
+2026-02-23 18:19:38,754 | INFO     | src.loading.loader | study_age_groups loaded: 933,847 rows
+2026-02-23 18:19:38,783 | INFO     | src.loading.loader | Loading 571,482 rows into study_mesh_terms...
+2026-02-23 18:19:47,390 | INFO     | src.loading.loader |   study_mesh_terms: 100,000 / 571,482
+2026-02-23 18:19:54,545 | INFO     | src.loading.loader |   study_mesh_terms: 200,000 / 571,482
+2026-02-23 18:20:01,378 | INFO     | src.loading.loader |   study_mesh_terms: 300,000 / 571,482
+2026-02-23 18:20:08,214 | INFO     | src.loading.loader |   study_mesh_terms: 400,000 / 571,482
+2026-02-23 18:20:16,682 | INFO     | src.loading.loader |   study_mesh_terms: 500,000 / 571,482
+2026-02-23 18:20:21,835 | INFO     | src.loading.loader | study_mesh_terms loaded: 571,482 rows
+2026-02-23 18:20:21,872 | INFO     | src.loading.loader | Database load complete!
+2026-02-23 18:20:21,873 | INFO     | src.loading.loader | ============================================================
+2026-02-23 18:20:21,874 | INFO     | src.loading.loader | LOADING SUMMARY
+2026-02-23 18:20:21,874 | INFO     | src.loading.loader | ============================================================
+2026-02-23 18:20:21,875 | INFO     | src.loading.loader |   organizations_loaded               :       28,083
+2026-02-23 18:20:21,876 | INFO     | src.loading.loader |   studies_loaded                     :      496,615
+2026-02-23 18:20:21,876 | INFO     | src.loading.loader |   study_conditions_loaded            :      923,632
+2026-02-23 18:20:21,877 | INFO     | src.loading.loader |   study_interventions_loaded         :      874,253
+2026-02-23 18:20:21,877 | INFO     | src.loading.loader |   study_age_groups_loaded            :      933,847
+2026-02-23 18:20:21,878 | INFO     | src.loading.loader |   study_mesh_terms_loaded            :      571,482
+2026-02-23 18:20:21,878 | INFO     | src.loading.loader | ============================================================
+2026-02-23 18:20:21,898 | INFO     | pipeline | 
+======================================================================
+2026-02-23 18:20:21,898 | INFO     | pipeline |   PIPELINE COMPLETED SUCCESSFULLY
+2026-02-23 18:20:21,899 | INFO     | pipeline |   Run ID:   13997c05-20260223-181309
+2026-02-23 18:20:21,899 | INFO     | pipeline |   Source:   csv
+2026-02-23 18:20:21,900 | INFO     | pipeline |   Duration: 432.6 seconds (7.2 minutes)
+2026-02-23 18:20:21,900 | INFO     | pipeline |   Studies loaded:  496,615
+2026-02-23 18:20:21,901 | INFO     | pipeline | ======================================================================

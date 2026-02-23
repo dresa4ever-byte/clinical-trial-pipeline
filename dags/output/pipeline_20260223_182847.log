@@ -1,0 +1,54 @@
+2026-02-23 18:28:47,264 | INFO     | pipeline | ======================================================================
+2026-02-23 18:28:47,265 | INFO     | pipeline |   CLINICAL TRIAL DATA PIPELINE
+2026-02-23 18:28:47,265 | INFO     | pipeline |   Run ID:  487cd22a-20260223-182847
+2026-02-23 18:28:47,266 | INFO     | pipeline |   Source:  csv
+2026-02-23 18:28:47,267 | INFO     | pipeline |   Started: 2026-02-23 18:28:47
+2026-02-23 18:28:47,267 | INFO     | pipeline | ======================================================================
+2026-02-23 18:28:47,282 | INFO     | pipeline | 
+========================================
+2026-02-23 18:28:47,283 | INFO     | pipeline | STEP 1/4: INGESTION
+2026-02-23 18:28:47,284 | INFO     | pipeline | ========================================
+2026-02-23 18:28:47,284 | INFO     | pipeline | --- CSV Ingestion ---
+2026-02-23 18:28:47,288 | INFO     | src.ingestion.csv_ingestor | Reading CSV: /opt/airflow/data/clinical_trials.csv (390.8 MB)
+2026-02-23 18:28:55,234 | INFO     | src.ingestion.csv_ingestor | CSV loaded: 496,615 rows × 17 columns
+2026-02-23 18:28:55,445 | INFO     | src.ingestion.csv_ingestor | Dropped index column(s): ['Unnamed: 0']
+2026-02-23 18:28:55,446 | INFO     | src.ingestion.base_ingestor | Schema validation passed for 'clinical_trials.csv' — 16 columns found
+2026-02-23 18:28:55,447 | INFO     | src.ingestion.csv_ingestor | Ingestion complete: 496,615 rows ready for processing
+2026-02-23 18:28:55,451 | INFO     | pipeline | CSV: 496,615 rows ingested
+2026-02-23 18:28:55,452 | INFO     | pipeline | Ingested: 496,615 rows × 17 columns
+2026-02-23 18:28:55,453 | INFO     | pipeline | 
+========================================
+2026-02-23 18:28:55,454 | INFO     | pipeline | STEP 2/4: CLEANING & TRANSFORMATION
+2026-02-23 18:28:55,455 | INFO     | pipeline | ========================================
+2026-02-23 18:28:55,846 | INFO     | src.processing.cleaner | Starting cleaning pipeline on 496,615 rows...
+2026-02-23 18:28:58,072 | INFO     | src.processing.cleaner | Trimmed whitespace on 17 string columns
+2026-02-23 18:29:09,863 | INFO     | src.processing.cleaner | Replaced 596,170 hidden null values → NaN
+2026-02-23 18:29:10,373 | INFO     | src.processing.cleaner | Dates: 491,469 parsed, 214,975 approximate (YYYY-MM), 33 suspicious (nulled), 0 unparseable
+2026-02-23 18:29:10,434 | INFO     | src.processing.cleaner | Phases: 197,017 non-null values remain
+2026-02-23 18:29:10,474 | INFO     | src.processing.cleaner | Extracted 28,083 unique organizations
+2026-02-23 18:29:12,083 | INFO     | src.processing.cleaner | Split 'Conditions': 496,612 rows → 923,632 individual values (110,163 unique)
+2026-02-23 18:29:13,928 | INFO     | src.processing.cleaner | Split 'Interventions': 447,377 rows → 874,253 individual values (443,238 unique)
+2026-02-23 18:29:15,238 | INFO     | src.processing.cleaner | Split 'Standard Age': 495,730 rows → 933,847 individual values (3 unique)
+2026-02-23 18:29:16,630 | INFO     | src.processing.cleaner | Split 'Medical Subject Headings': 410,341 rows → 571,482 individual values (63,520 unique)
+2026-02-23 18:29:16,980 | INFO     | src.processing.cleaner | Built studies DataFrame: 496,615 rows × 14 columns
+2026-02-23 18:29:16,981 | INFO     | src.processing.cleaner | ============================================================
+2026-02-23 18:29:16,981 | INFO     | src.processing.cleaner | CLEANING SUMMARY
+2026-02-23 18:29:16,982 | INFO     | src.processing.cleaner | ============================================================
+2026-02-23 18:29:16,983 | INFO     | src.processing.cleaner |   rows_input                    :      496,615
+2026-02-23 18:29:16,984 | INFO     | src.processing.cleaner |   hidden_nulls_replaced         : 596170
+2026-02-23 18:29:16,986 | INFO     | src.processing.cleaner |   dates_parsed                  : 491469
+2026-02-23 18:29:16,987 | INFO     | src.processing.cleaner |   dates_approximate             : 214975
+2026-02-23 18:29:16,988 | INFO     | src.processing.cleaner |   dates_suspicious              : 33
+2026-02-23 18:29:16,988 | INFO     | src.processing.cleaner |   dates_unparseable             : 0
+2026-02-23 18:29:16,989 | INFO     | src.processing.cleaner |   rows_output                   :      496,615
+2026-02-23 18:29:16,990 | INFO     | src.processing.cleaner | ============================================================
+2026-02-23 18:29:16,991 | INFO     | pipeline |   Studies:        496,615 rows
+2026-02-23 18:29:16,991 | INFO     | pipeline |   Organizations:  28,083 rows
+2026-02-23 18:29:16,992 | INFO     | pipeline |   Conditions:     923,632 rows
+2026-02-23 18:29:16,993 | INFO     | pipeline |   Interventions:  874,253 rows
+2026-02-23 18:29:16,994 | INFO     | pipeline |   Age Groups:     933,847 rows
+2026-02-23 18:29:16,994 | INFO     | pipeline |   MeSH Terms:     571,482 rows
+2026-02-23 18:29:16,995 | INFO     | pipeline | 
+========================================
+2026-02-23 18:29:16,996 | INFO     | pipeline | STEP 3/4: VALIDATION
+2026-02-23 18:29:16,996 | INFO     | pipeline | ========================================

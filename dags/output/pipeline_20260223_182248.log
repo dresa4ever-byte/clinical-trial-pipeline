@@ -1,0 +1,83 @@
+2026-02-23 18:22:48,056 | INFO     | pipeline | ======================================================================
+2026-02-23 18:22:48,057 | INFO     | pipeline |   CLINICAL TRIAL DATA PIPELINE
+2026-02-23 18:22:48,058 | INFO     | pipeline |   Run ID:  7bf01dd1-20260223-182248
+2026-02-23 18:22:48,058 | INFO     | pipeline |   Source:  csv
+2026-02-23 18:22:48,059 | INFO     | pipeline |   Started: 2026-02-23 18:22:48
+2026-02-23 18:22:48,059 | INFO     | pipeline | ======================================================================
+2026-02-23 18:22:48,060 | INFO     | pipeline | 
+========================================
+2026-02-23 18:22:48,061 | INFO     | pipeline | STEP 1/4: INGESTION
+2026-02-23 18:22:48,061 | INFO     | pipeline | ========================================
+2026-02-23 18:22:48,062 | INFO     | pipeline | --- CSV Ingestion ---
+2026-02-23 18:22:48,065 | INFO     | src.ingestion.csv_ingestor | Reading CSV: /opt/airflow/data/clinical_trials.csv (390.8 MB)
+2026-02-23 18:22:56,830 | INFO     | src.ingestion.csv_ingestor | CSV loaded: 496,615 rows × 17 columns
+2026-02-23 18:22:56,992 | INFO     | src.ingestion.csv_ingestor | Dropped index column(s): ['Unnamed: 0']
+2026-02-23 18:22:56,992 | INFO     | src.ingestion.base_ingestor | Schema validation passed for 'clinical_trials.csv' — 16 columns found
+2026-02-23 18:22:56,993 | INFO     | src.ingestion.csv_ingestor | Ingestion complete: 496,615 rows ready for processing
+2026-02-23 18:22:56,996 | INFO     | pipeline | CSV: 496,615 rows ingested
+2026-02-23 18:22:56,997 | INFO     | pipeline | Ingested: 496,615 rows × 17 columns
+2026-02-23 18:22:56,997 | INFO     | pipeline | 
+========================================
+2026-02-23 18:22:56,998 | INFO     | pipeline | STEP 2/4: CLEANING & TRANSFORMATION
+2026-02-23 18:22:56,998 | INFO     | pipeline | ========================================
+2026-02-23 18:22:57,342 | INFO     | src.processing.cleaner | Starting cleaning pipeline on 496,615 rows...
+2026-02-23 18:22:59,638 | INFO     | src.processing.cleaner | Trimmed whitespace on 17 string columns
+2026-02-23 18:23:13,851 | INFO     | src.processing.cleaner | Replaced 596,170 hidden null values → NaN
+2026-02-23 18:23:14,423 | INFO     | src.processing.cleaner | Dates: 491,469 parsed, 214,975 approximate (YYYY-MM), 33 suspicious (nulled), 0 unparseable
+2026-02-23 18:23:14,496 | INFO     | src.processing.cleaner | Phases: 197,017 non-null values remain
+2026-02-23 18:23:14,586 | INFO     | src.processing.cleaner | Extracted 28,083 unique organizations
+2026-02-23 18:23:16,755 | INFO     | src.processing.cleaner | Split 'Conditions': 496,612 rows → 923,632 individual values (110,163 unique)
+2026-02-23 18:23:18,775 | INFO     | src.processing.cleaner | Split 'Interventions': 447,377 rows → 874,253 individual values (443,238 unique)
+2026-02-23 18:23:20,446 | INFO     | src.processing.cleaner | Split 'Standard Age': 495,730 rows → 933,847 individual values (3 unique)
+2026-02-23 18:23:22,209 | INFO     | src.processing.cleaner | Split 'Medical Subject Headings': 410,341 rows → 571,482 individual values (63,520 unique)
+2026-02-23 18:23:22,674 | INFO     | src.processing.cleaner | Built studies DataFrame: 496,615 rows × 14 columns
+2026-02-23 18:23:22,675 | INFO     | src.processing.cleaner | ============================================================
+2026-02-23 18:23:22,675 | INFO     | src.processing.cleaner | CLEANING SUMMARY
+2026-02-23 18:23:22,676 | INFO     | src.processing.cleaner | ============================================================
+2026-02-23 18:23:22,676 | INFO     | src.processing.cleaner |   rows_input                    :      496,615
+2026-02-23 18:23:22,679 | INFO     | src.processing.cleaner |   hidden_nulls_replaced         : 596170
+2026-02-23 18:23:22,680 | INFO     | src.processing.cleaner |   dates_parsed                  : 491469
+2026-02-23 18:23:22,681 | INFO     | src.processing.cleaner |   dates_approximate             : 214975
+2026-02-23 18:23:22,681 | INFO     | src.processing.cleaner |   dates_suspicious              : 33
+2026-02-23 18:23:22,682 | INFO     | src.processing.cleaner |   dates_unparseable             : 0
+2026-02-23 18:23:22,682 | INFO     | src.processing.cleaner |   rows_output                   :      496,615
+2026-02-23 18:23:22,682 | INFO     | src.processing.cleaner | ============================================================
+2026-02-23 18:23:22,683 | INFO     | pipeline |   Studies:        496,615 rows
+2026-02-23 18:23:22,683 | INFO     | pipeline |   Organizations:  28,083 rows
+2026-02-23 18:23:22,684 | INFO     | pipeline |   Conditions:     923,632 rows
+2026-02-23 18:23:22,684 | INFO     | pipeline |   Interventions:  874,253 rows
+2026-02-23 18:23:22,684 | INFO     | pipeline |   Age Groups:     933,847 rows
+2026-02-23 18:23:22,685 | INFO     | pipeline |   MeSH Terms:     571,482 rows
+2026-02-23 18:23:22,685 | INFO     | pipeline | 
+========================================
+2026-02-23 18:23:22,686 | INFO     | pipeline | STEP 3/4: VALIDATION
+2026-02-23 18:23:22,686 | INFO     | pipeline | ========================================
+2026-02-23 18:23:22,978 | INFO     | src.processing.validator | Date range: 1957-01-01 to 2026-12-31
+2026-02-23 18:23:22,982 | INFO     | src.processing.validator | 
+============================================================
+  DATA VALIDATION REPORT
+============================================================
+
+  WARNINGS (1):
+    ⚠ Column 'study_type' has 885 unexpected values. Examples: ['UNKNOWN']
+
+  Result: PASSED
+============================================================
+2026-02-23 18:23:22,983 | INFO     | src.processing.validator | Validation PASSED (1 warnings)
+2026-02-23 18:23:22,983 | INFO     | pipeline | 
+========================================
+2026-02-23 18:23:22,983 | INFO     | pipeline | STEP 4/4: DATABASE LOADING
+2026-02-23 18:23:22,984 | INFO     | pipeline | ========================================
+2026-02-23 18:23:23,092 | INFO     | src.loading.loader | Starting database load (run_id: 7bf01dd1-20260223-182248)...
+2026-02-23 18:23:40,660 | ERROR    | pipeline | PIPELINE FAILED: AttributeError: 'Connection' object has no attribute 'commit'
+2026-02-23 18:23:40,661 | ERROR    | pipeline | Check the log file for details
+Traceback (most recent call last):
+  File "/opt/airflow/dags/src/pipeline/main.py", line 180, in run_pipeline
+    load_stats = loader.load_all(cleaned_data, run_id)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/airflow/dags/src/loading/loader.py", line 64, in load_all
+    self._truncate_tables()
+  File "/opt/airflow/dags/src/loading/loader.py", line 123, in _truncate_tables
+    conn.commit()
+    ^^^^^^^^^^^
+AttributeError: 'Connection' object has no attribute 'commit'
